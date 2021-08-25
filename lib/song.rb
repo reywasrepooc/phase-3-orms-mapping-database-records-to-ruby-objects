@@ -9,9 +9,7 @@ class Song
   end
 
   def self.drop_table
-    sql = <<-SQL
-      DROP TABLE IF EXISTS songs
-    SQL
+    sql =  "DROP TABLE IF EXISTS songs"
 
     DB[:conn].execute(sql)
   end
@@ -29,18 +27,11 @@ class Song
   end
 
   def save
-    sql = <<-SQL
-      INSERT INTO songs (name, album)
-      VALUES (?, ?)
-    SQL
+    sql = "INSERT INTO songs (name, album) VALUES (?, ?)"
 
-    # insert the song
-    DB[:conn].execute(sql, self.name, self.album)
+    DB[:conn].execute(sql, name, album)
 
-    # get the song ID from the database and save it to the Ruby instance
     self.id = DB[:conn].execute("SELECT last_insert_rowid() FROM songs")[0][0]
-
-    # return the Ruby instance
     self
   end
 
@@ -50,7 +41,7 @@ class Song
   end
 
   def self.new_from_db(row)
-    self.new(id: row[0], name: row[1], album: row[2])
+    new(id: row[0], name: row[1], album: row[2])
   end
 
   def self.all
@@ -59,9 +50,9 @@ class Song
       FROM songs
     SQL
     DB[:conn].execute(sql).map do |row|
-      self.new_from_db(row)
+      new_from_db(row)
+    end
   end
-end
 
   def self.find_by_name(name)
     sql = <<-SQL
@@ -72,7 +63,7 @@ end
     SQL
 
     DB[:conn].execute(sql, name).map do |row|
-      self.new_from_db(row)
+      new_from_db(row)
     end.first
   end
 end
